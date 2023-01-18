@@ -2,9 +2,12 @@
   "name": "geo-firestore",
   "version": "1.0.0",
   "description": "Library to make geoqueries to firebase firestore",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "tsc",
+    "pack": "npm pack"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,8 @@
   "dependencies": {
     "firebase": "^9.15.0",
     "geofire-common": "^6.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
   }
 }
