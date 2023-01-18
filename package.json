@@ -1,5 +1,5 @@
 {
-  "name": "geo-firestore",
+  "name": "geoqueryfirestore",
   "version": "1.0.0",
   "description": "Library to make geoqueries to firebase firestore",
   "main": "dist/index.js",
