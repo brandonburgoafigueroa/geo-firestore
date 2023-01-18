@@ -1,0 +1,19 @@
+{
+  "name": "geo-firestore",
+  "version": "1.0.0",
+  "description": "Library to make geoqueries to firebase firestore",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "poner aca"
+  },
+  "author": "Brandon Burgoa Figueroa",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^9.15.0",
+    "geofire-common": "^6.0.0"
+  }
+}
