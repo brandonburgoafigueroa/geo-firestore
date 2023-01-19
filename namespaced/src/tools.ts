@@ -1,17 +1,17 @@
-import {
-  DocumentData, endAt, Query, query as fbQuery, QueryDocumentSnapshot, startAt, getDocs, orderBy, onSnapshot, Unsubscribe,
-} from 'firebase/firestore';
-
 import * as geofire from 'geofire-common';
-import { GeoQueryOptions, GeoQueryPoint } from './types';
+import {GeoQueryOptions, Query, QueryDocumentSnapshot} from './types';
 import { GeoQuerySnapshot } from './geoQuerySnapshot';
+import {getDistanceOfDocument} from "./utils";
 
 function constructGeoQueries(query: Query, options:GeoQueryOptions): Query[] {
   const bounds = geofire.geohashQueryBounds([options.center.latitude, options.center.longitude], options.radius);
   const queries = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const b of bounds) {
-    const newQuery = fbQuery(query, orderBy(`${options.property}.geohash`), startAt(b[0]), endAt(b[1]));
+    const newQuery = query
+        .orderBy('geohash')
+        .startAt(b[0])
+        .endAt(b[1]);
     queries.push(newQuery);
   }
   return queries;
@@ -19,13 +19,11 @@ function constructGeoQueries(query: Query, options:GeoQueryOptions): Query[] {
 
 export async function getGeoQueryDocs(query: Query, options:GeoQueryOptions):Promise<GeoQuerySnapshot> {
   const queries = constructGeoQueries(query, options);
-  const docs: QueryDocumentSnapshot<DocumentData>[] = [];
+  const docs: QueryDocumentSnapshot[] = [];
   await Promise.all(queries.map(async (query) => {
-    const documents = await getDocs(query);
+    const documents = await query.get();
     documents.docs.forEach((document) => {
-      const geoQueryPoint:GeoQueryPoint = document.get(options.property);
-      const distanceInKm = geofire.distanceBetween([geoQueryPoint.geopoint.latitude, geoQueryPoint.geopoint.longitude], [options.center.latitude, options.center.longitude]);
-      const distanceInM = distanceInKm * 1000;
+      const distanceInM = getDistanceOfDocument(document, options);
       if (distanceInM <= options.radius) {
         docs.push(document);
       }
@@ -37,8 +35,8 @@ export async function getGeoQueryDocs(query: Query, options:GeoQueryOptions):Pro
 
 export function onGeoQuerySnapshot(query: Query, options:GeoQueryOptions, onNext:(snapshot: GeoQuerySnapshot)=>void) {
   const queries = constructGeoQueries(query, options);
-  const docs: Record<string, QueryDocumentSnapshot<DocumentData>> = {};
-  const subscriptions: Unsubscribe[] = [];
+  const docs: Record<string, QueryDocumentSnapshot> = {};
+  const subscriptions: (()=>void)[] = [];
   const queriesExecuted:Record<string, boolean> = {};
 
   const verifyIfCanNotifyChanges = () => {
@@ -48,18 +46,16 @@ export function onGeoQuerySnapshot(query: Query, options:GeoQueryOptions, onNext
   };
 
   queries.forEach((query, queryIndex) => {
-    subscriptions.push(onSnapshot(query, (snapshot) => {
+    subscriptions.push(query.onSnapshot(snapshot => {
       snapshot.docs.forEach((document) => {
-        const geoQueryPoint:GeoQueryPoint = document.get(options.property);
-        const distanceInKm = geofire.distanceBetween([geoQueryPoint.geopoint.latitude, geoQueryPoint.geopoint.longitude], [options.center.latitude, options.center.longitude]);
-        const distanceInM = distanceInKm * 1000;
+        const distanceInM = getDistanceOfDocument(document, options);
         if (distanceInM <= options.radius) {
           docs[document.id] = document;
         }
       });
       queriesExecuted[queryIndex] = true;
       verifyIfCanNotifyChanges();
-    }));
+    }))
   });
 
   return () => {

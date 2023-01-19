@@ -1,16 +1,16 @@
-import { DocumentData, Query, QueryDocumentSnapshot } from 'firebase/firestore';
-import { GeoQueryOptions } from './types';
+
+import {GeoQueryOptions, Query, QueryDocumentSnapshot } from './types';
 
 export class GeoQuerySnapshot {
   options:GeoQueryOptions;
 
-  docs: QueryDocumentSnapshot<DocumentData>[];
+  docs: QueryDocumentSnapshot[];
 
-  queries: Query<DocumentData>[];
+  queries: Query[];
 
   empty:boolean;
 
-  constructor(docs: QueryDocumentSnapshot<DocumentData>[], queries:Query<DocumentData>[], options:GeoQueryOptions) {
+  constructor(docs: QueryDocumentSnapshot[], queries:Query[], options:GeoQueryOptions) {
     this.docs = docs;
     this.queries = queries;
     this.options = options;
