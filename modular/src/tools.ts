@@ -1,5 +1,5 @@
 import {
-  DocumentData, endAt, Query, query as fbQuery, QueryDocumentSnapshot, startAt, getDocs, orderBy, onSnapshot, Unsubscribe,
+  DocumentData, endAt, Query, query as fbQuery, QueryDocumentSnapshot, startAt, getDocs, orderBy, onSnapshot, Unsubscribe, runTransaction,
 } from 'firebase/firestore';
 
 import * as geofire from 'geofire-common';

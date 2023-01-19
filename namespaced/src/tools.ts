@@ -1,7 +1,8 @@
 import * as geofire from 'geofire-common';
-import {GeoQueryOptions, Query, QueryDocumentSnapshot} from './types';
+import {GeoQueryOptions, GeoTransaction, Query, QueryDocumentSnapshot, Transaction} from './types';
 import { GeoQuerySnapshot } from './geoQuerySnapshot';
 import {getDistanceOfDocument} from "./utils";
+import firebase from "firebase/compat/app"
 
 function constructGeoQueries(query: Query, options:GeoQueryOptions): Query[] {
   const bounds = geofire.geohashQueryBounds([options.center.latitude, options.center.longitude], options.radius);
