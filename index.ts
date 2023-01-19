@@ -1,2 +1,7 @@
-export * from './src/tools';
-export * from './src/types';
+import * as modular from "./modular"
+import * as namespaced from "./namespaced"
+
+export {
+    modular,
+    namespaced
+};
