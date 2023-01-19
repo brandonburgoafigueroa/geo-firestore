@@ -63,3 +63,24 @@ export function onGeoQuerySnapshot(query: Query, options:GeoQueryOptions, onNext
     subscriptions.forEach((unsubscribe) => unsubscribe());
   };
 }
+
+export async function runGeoQueryTransaction(updateFunction:(transaction:GeoTransaction)=>void): Promise<void> {
+  return firebase.firestore().runTransaction(async transaction => {
+    const geoTransaction:GeoTransaction = transaction
+    geoTransaction.getGeoQueryDocs = async (query: Query)=>{
+      const data = await transaction.get(firebase.firestore().collection(""))
+      return new GeoQuerySnapshot([], [], {})
+    }
+    return updateFunction(geoTransaction)
+  })
+}
+
+firebase.firestore().runTransaction(async transaction => {
+  const query = firebase.firestore().collection("asdasd").where("1", "==", "1")
+  const data = await transaction.get(query)
+})
+
+runGeoQueryTransaction(async transaction => {
+  const data = await transaction.getGeoQueryDocs(firebase.firestore().collection(""))
+
+})
